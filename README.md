@@ -1,2 +1,2 @@
 # mipt-kis-networks
-Repository with homeworks for MIPT Networks course.
+Repository with homeworks for MIPT Networks course
