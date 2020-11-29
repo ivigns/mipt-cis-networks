@@ -3,11 +3,7 @@
 #include <array>
 #include <optional>
 
-namespace csma_cd {
-
-using Byte = uint8_t;
-
-}
+#include "consts.hpp"
 
 namespace csma_cd::utils {
 

@@ -52,9 +52,13 @@ uint32_t crc32_table[] = {
 namespace csma_cd::utils {
 
 void InsertAddress(size_t id, std::array<csma_cd::Byte, 6>& address) {
-  for (size_t i = 5; i >= 3; --i) {
-    address[i] = id & 0xffu;
-    id >>= 4u;
+  if (id >= kMaxStationsCount) {
+    address = kBroadcastAddress;
+  } else {
+    for (size_t i = 5; i >= 3; --i) {
+      address[i] = id & 0x0fu;
+      id >>= 4u;
+    }
   }
 }
 
@@ -68,8 +72,8 @@ std::optional<size_t> ExctractId(const std::array<csma_cd::Byte, 6>& address) {
   // Decode second half of address
   size_t id = 0;
   for (size_t i = 3; i < 6; ++i) {
-    id |= address[i];
     id <<= 4u;
+    id |= address[i];
   }
   return id;
 }

@@ -9,7 +9,8 @@ class Frame;
 
 class Logger {
  public:
-  Logger(std::ostream& log_stream, const std::chrono::nanoseconds& clock);
+  Logger(std::ostream& log_stream, const std::chrono::nanoseconds& clock,
+         size_t max_id);
 
   void LogPayload(const csma_cd::Payload& payload, size_t station_id,
                   const std::string& message);
@@ -20,10 +21,12 @@ class Logger {
 
  private:
   void LogClock();
+  void LogStation(size_t id);
 
  private:
   std::ostream& log_stream_;
   const std::chrono::nanoseconds& clock_;
+  size_t id_width_;
 };
 
 }  // namespace csma_cd

@@ -2,7 +2,7 @@
 #include <iostream>
 #include <thread>
 
-#include "protocol.hpp"
+#include "ethernet.hpp"
 
 struct Args {
   size_t stations_count{};
@@ -45,12 +45,16 @@ std::vector<csma_cd::Payload> LoadPayloadFromFile(
     std::string src_id;
     std::string dst_id;
     payload_file >> src_id >> dst_id;
+    if (payload_file.eof()) {
+      break;
+    }
 
     std::string data(1600, 0);
     payload_file.getline(data.data(), data.size());
     data.erase(data.begin(), std::find_if(data.begin(), data.end(), [](char c) {
                  return !std::isspace(c);
                }));
+    data = data.data();
     if (data.size() > 1500) {
       throw std::invalid_argument(
           "Bad payload: data length must be less than 1500");
@@ -73,7 +77,7 @@ void ProcessPayload(csma_cd::Ethernet& ethernet,
 }
 
 int main(int argc, char** argv) {
-  /*Args args;
+  Args args;
   try {
     args = ParseArgs(argc, argv);
   } catch (std::invalid_argument&) {
@@ -87,15 +91,11 @@ int main(int argc, char** argv) {
     csma_cd::Ethernet ethernet(args.stations_count,
                                LoadPayloadFromFile(args.payload_file_path),
                                std::cout);
+    ProcessPayload(ethernet, args.tick_delay);
   } catch (std::invalid_argument& exc) {
-    std::cerr << exc.what();
+    std::cerr << exc.what() << std::endl;
     return 2;
   }
-  */
-
-  csma_cd::Ethernet ethernet(3, {{0, 1, "hello"}, {1, 0, "hi"}, {1, 2, "faq"}},
-                             std::cout);
-  ProcessPayload(ethernet, std::chrono::milliseconds(500));
 
   return 0;
 }
