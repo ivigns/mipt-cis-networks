@@ -1,5 +1,6 @@
 #include <fstream>
 #include <iostream>
+#include <thread>
 
 #include "protocol.hpp"
 
@@ -61,6 +62,16 @@ std::vector<csma_cd::Payload> LoadPayloadFromFile(
   return payload;
 }
 
+void ProcessPayload(csma_cd::Ethernet& ethernet,
+                    std::optional<std::chrono::milliseconds> tick_delay) {
+  while (!ethernet.IsIdle()) {
+    ethernet.ProcessTick();
+    if (tick_delay) {
+      std::this_thread::sleep_for(*tick_delay);
+    }
+  }
+}
+
 int main(int argc, char** argv) {
   /*Args args;
   try {
@@ -68,25 +79,23 @@ int main(int argc, char** argv) {
   } catch (std::invalid_argument&) {
     std::cerr << "Usage:\t" << argv[0] << " -N <stations count> "
               << "-f <path to file with payload> "
-              << "-s <tick delay in ms>" << std::endl;
+              << "[-s <tick delay in ms>]" << std::endl;
     return 1;
   }
 
   try {
     csma_cd::Ethernet ethernet(args.stations_count,
                                LoadPayloadFromFile(args.payload_file_path),
-                               args.tick_delay, &std::cout);
+                               std::cout);
   } catch (std::invalid_argument& exc) {
     std::cerr << exc.what();
     return 2;
   }
   */
 
-  std::string a;
-  std::cin >> a;
-  std::string line(200, 0);
-  std::cin.getline(line.data(), line.size());
-  std::cout << a << "\n" << line;
+  csma_cd::Ethernet ethernet(3, {{0, 1, "hello"}, {1, 0, "hi"}, {1, 2, "faq"}},
+                             std::cout);
+  ProcessPayload(ethernet, std::chrono::milliseconds(500));
 
   return 0;
 }

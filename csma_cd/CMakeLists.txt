@@ -3,4 +3,4 @@ project(csma-cd)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(csma-cd main.cpp protocol.cpp crc32.cpp)
+add_executable(csma-cd main.cpp protocol.cpp utils.cpp logger.cpp)

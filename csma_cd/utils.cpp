@@ -1,4 +1,4 @@
-#include "crc32.hpp"
+#include "utils.hpp"
 
 namespace {
 
@@ -49,9 +49,32 @@ uint32_t crc32_table[] = {
 
 }  // namespace
 
-namespace crc32 {
+namespace csma_cd::utils {
 
-uint32_t crc32(uint32_t crc, const uint8_t* data, size_t size) {
+void InsertAddress(size_t id, std::array<csma_cd::Byte, 6>& address) {
+  for (size_t i = 5; i >= 3; --i) {
+    address[i] = id & 0xffu;
+    id >>= 4u;
+  }
+}
+
+std::optional<size_t> ExctractId(const std::array<csma_cd::Byte, 6>& address) {
+  // Check first half of address
+  if (((address[0] & 0x40u) >> 6u) || address[1] != 0xba ||
+      address[2] != 0xba) {
+    return std::nullopt;
+  }
+
+  // Decode second half of address
+  size_t id = 0;
+  for (size_t i = 3; i < 6; ++i) {
+    id |= address[i];
+    id <<= 4u;
+  }
+  return id;
+}
+
+uint32_t CRC32(uint32_t crc, const uint8_t* data, size_t size) {
   crc = crc ^ ~0u;
   auto p = data;
   while (size--) {
@@ -60,4 +83,4 @@ uint32_t crc32(uint32_t crc, const uint8_t* data, size_t size) {
   return crc ^ ~0u;
 }
 
-}  // namespace crc32
+}  // namespace csma_cd::utils
