@@ -1,0 +1,70 @@
+version: '2.2'
+services:
+  server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    restart: always
+    networks:
+      network:
+        ipv4_address: 172.20.1.0
+    expose:
+      - "1-65535"
+
+  client-geo-1:
+    build:
+      context: client
+      dockerfile: Dockerfile
+    restart: always
+    networks:
+      network:
+        ipv4_address: 172.20.1.1
+    expose:
+      - "1-65535"
+    depends_on:
+      - server
+
+  client-geo-2:
+    build:
+      context: client
+      dockerfile: Dockerfile
+    restart: always
+    networks:
+      network:
+        ipv4_address: 172.20.1.2
+    expose:
+      - "1-65535"
+    depends_on:
+      - server
+  
+  client-geo-3:
+    build:
+      context: client
+      dockerfile: Dockerfile
+    restart: always
+    networks:
+      network:
+        ipv4_address: 172.20.1.3
+    expose:
+      - "1-65535"
+    depends_on:
+      - server
+
+  client-geo-4:
+    build:
+      context: client
+      dockerfile: Dockerfile
+    restart: always
+    networks:
+      network:
+        ipv4_address: 172.20.1.4
+    expose:
+      - "1-65535"
+    depends_on:
+      - server
+
+networks:
+  network:
+    ipam:
+      config:
+        - subnet: 172.20.1.0/16
